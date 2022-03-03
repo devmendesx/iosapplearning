@@ -11,4 +11,4 @@ to learn from a better course called iOS & Swift - The complete iOS Developer Bo
     1. [iOS & Swift - The Complete iOS App Development Bootcamp](https://www.udemy.com/course/ios-13-app-development-bootcamp/)
 
 
-*__I put all lessons and projects together, so sorry for that but I was running on my way and didn't realize that it was in the same folder.__*
+*__I put all lessons and projects together, so sorry for that but I was running on my way and I didn't realize that it was in the same folder.__*
