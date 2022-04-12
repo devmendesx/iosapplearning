@@ -32,7 +32,7 @@ class ViewController: UIViewController {
             if timing == 0 {
                 self.done(timer: timer, progress: progress)
             }else{
-                progressBar.progress += Float(progress)
+                progressBar.setProgress(progressBar.progress+Float(progress), animated: true)
             }
         }
     }
@@ -44,7 +44,7 @@ class ViewController: UIViewController {
     }
     func done(timer: Timer, progress: Double){
         timer.invalidate()
-        progressBar.progress += Float(progress)
+        progressBar.setProgress(progressBar.progress+Float(progress), animated: true)
         self.playSound()
         textResult.text = String("Your egg is done!")
     }
