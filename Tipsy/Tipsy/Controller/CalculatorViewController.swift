@@ -46,6 +46,8 @@ class CalculatorViewController: UIViewController {
             self.final = calculatorService.calculateBillSplitted(totalBill: Double(billTextField.text!)!, people: self.people, tip: self.tip)
             self.tip = self.tip * 100
             self.performSegue(withIdentifier: "resultStoryboard", sender: self)
+        }else {
+            self.performSegue(withIdentifier: "errorStoryboard", sender: self)
         }
     }
     
