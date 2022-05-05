@@ -8,22 +8,27 @@
 
 import UIKit
 
-class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManagerDelegate {
+class WeatherViewController: UIViewController {
     
     @IBOutlet weak var conditionImageView: UIImageView!
     @IBOutlet weak var temperatureLabel: UILabel!
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var searchTextField: UITextField!
     
-    var weatherService = WeatherManager()
+    var weatherManager = WeatherManager()
     var weatherViewModel: WeatherViewModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         searchTextField.delegate = self
-        weatherService.delegate = self
+        weatherManager.delegate = self
     }
+}
 
+// MARK: - UITextFieldDelegate
+
+extension WeatherViewController: UITextFieldDelegate {
+    
     @IBAction func searchButton(_ sender: Any) {
         searchTextField.endEditing(true)
         print(searchTextField.text!)
@@ -43,16 +48,26 @@ class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManag
     }
     func textFieldDidEndEditing(_ textField: UITextField) {
         if let city = searchTextField.text {
-            weatherService.fetchWeather(with: city)
+            weatherManager.fetchWeather(with: city)
         }
         searchTextField.text = nil
     }
     
-    func didUpdateViewUI(weatherViewModel: WeatherViewModel) {
-        conditionImageView.image = UIImage(systemName: weatherViewModel.conditionName.description)
-        cityLabel.text = (weatherViewModel.cityName.description)
-        temperatureLabel.text = (weatherViewModel.temperatureString.description)
-    }
-    
 }
 
+// MARK: - WeatherManagerDelegate
+
+extension WeatherViewController: WeatherManagerDelegate {
+    
+    func didUpdateViewUI(weatherViewModel: WeatherViewModel) {
+        DispatchQueue.main.async {
+            self.conditionImageView.image = UIImage(systemName: weatherViewModel.conditionName.description)
+            self.cityLabel.text = weatherViewModel.cityName.description
+            self.temperatureLabel.text = weatherViewModel.temperatureString.description
+        }
+    }
+    
+    func didFailWithError(with error: Error) {
+        print(error )
+    }
+}
