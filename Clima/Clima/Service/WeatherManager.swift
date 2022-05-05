@@ -6,7 +6,7 @@ struct WeatherManager {
     var APP_ID: String = "dd0f6e94e8d8dc954941a7ef958d124d"
     var delegate: WeatherManagerDelegate?
     
-    public func fetchWeather(cityName: String){
+    public func fetchWeather(with cityName: String){
         AF.request(WEATHER_URL, method: .get, parameters: ["APPID": APP_ID, "units": "metric", "q": cityName]).response { response in
             do {
                 let weather = try JSONDecoder().decode(WeatherInformationModel.self, from: response.data!)
