@@ -78,7 +78,10 @@ extension WeatherViewController: WeatherManagerDelegate {
     }
     
     func didFailWithError(with error: Error) {
-        print(error )
+        print(error)
+    }
+    func didCityNotFound(with error: String) {
+        self.searchTextField.placeholder = error
     }
 }
 

@@ -16,6 +16,8 @@ struct WeatherManager {
                     let weatherViewModel = self.parsingJSON(with: value!)
                     if weatherViewModel != nil {
                         self.delegate?.didUpdateViewUI(weatherViewModel: weatherViewModel!)
+                    }else {
+                        self.delegate?.didCityNotFound(with: "City not found, please try again!")
                     }
                 case .failure(let error):
                     self.delegate?.didFailWithError(with: error)
@@ -37,4 +39,5 @@ struct WeatherManager {
 protocol WeatherManagerDelegate {
     func didUpdateViewUI(weatherViewModel: WeatherViewModel)
     func didFailWithError(with error: Error)
+    func didCityNotFound(with error: String)
 }
