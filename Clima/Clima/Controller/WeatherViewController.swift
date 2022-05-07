@@ -41,7 +41,6 @@ extension WeatherViewController: UITextFieldDelegate {
     
     @IBAction func searchButton(_ sender: Any) {
         searchTextField.endEditing(true)
-        print(searchTextField.text!)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -60,7 +59,7 @@ extension WeatherViewController: UITextFieldDelegate {
         if let city = searchTextField.text {
             weatherManager.fetchWeather(with: ["q": city])
         }
-        searchTextField.text = nil
+        searchTextField.text = ""
     }
     
 }
