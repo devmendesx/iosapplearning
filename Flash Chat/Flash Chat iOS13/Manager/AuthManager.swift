@@ -39,6 +39,10 @@ struct AuthManager {
             self.delegate?.whenDidFail(with: error.localizedDescription)
         }
     }
+    
+    func currentUser() -> String {
+        return (Auth.auth().currentUser?.email)!
+    }
 }
 
 protocol AuthManagerDelegate {
