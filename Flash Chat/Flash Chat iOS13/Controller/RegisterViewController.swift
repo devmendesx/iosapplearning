@@ -10,8 +10,11 @@ import UIKit
 
 class RegisterViewController: UIViewController {
     
-    @IBOutlet weak var emailTextfield: UITextField!
-    @IBOutlet weak var passwordTextfield: UITextField!
+
+    @IBOutlet weak var fullNameTextField: UITextField!
+    @IBOutlet weak var ageTextField: UITextField!
+    @IBOutlet weak var emailTextField: UITextField!
+    @IBOutlet weak var passwordTextField: UITextField!
     
     var authManager: AuthManager = AuthManager()
     
@@ -21,8 +24,8 @@ class RegisterViewController: UIViewController {
     }
     
     @IBAction func registerPressed(_ sender: UIButton) {
-        if let email = emailTextfield.text, let password = passwordTextfield.text{
-            authManager.signUp(email: email, password: password)
+        if let email = emailTextField.text, let password = passwordTextField.text, let fullName = fullNameTextField.text, let age = ageTextField.text{
+            authManager.signUp(user: User(name:fullName, age: age, email: email, password: password))
         }
     }
 }

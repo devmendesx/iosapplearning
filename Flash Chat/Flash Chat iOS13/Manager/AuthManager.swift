@@ -12,14 +12,16 @@ struct AuthManager {
     
     var delegate: AuthManagerDelegate?
     
-    func signUp(email: String, password: String){
-        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+    func signUp(user: User){
+        Auth.auth().createUser(withEmail: user.email, password: user.password) { result, error in
             if let _error = error {
                 self.delegate?.whenDidFail(with: _error.localizedDescription)
             }else{
+                FDatabase().insertNewUser(user: user)
                 self.delegate?.whenDidSuccess()
             }
         }
+            
     }
     func signIn(email: String, password: String) {
         Auth.auth().signIn(withEmail: email, password: password){ result, error in
