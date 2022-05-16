@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import IPImage
+import LetterAvatarKit
 
 class ChatViewController: UIViewController {
     
@@ -19,27 +19,25 @@ class ChatViewController: UIViewController {
     var database: FDatabase = FDatabase()
     
     var messages: [MessageViewModel] = []
-    var user: User? = nil
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.authManager.delegate = self
         self.tableView.dataSource = self
-        setAppeareance()
+        setAppeareance(color: UIColor(named:Key.BrandColors.purple)!)
         self.navigationItem.hidesBackButton = true
         self.title = Key.appTitle
         
         self.tableView.register(UINib(nibName: Key.cellNibName, bundle: nil), forCellReuseIdentifier: Key.cellIdentifier)
         
-        
+        database.findUserByEmail(email: self.authManager.currentUser())
         self.loadMessages()
     }
     
-    func setAppeareance(){
+    func setAppeareance(color: UIColor){
         self.view.overrideUserInterfaceStyle = .light
         let appearance = UINavigationBarAppearance()
-        appearance.backgroundColor = UIColor(named: Key.BrandColors.purple)
+        appearance.backgroundColor =  color
         self.navigationController?.navigationBar.standardAppearance = appearance
         self.navigationController?.navigationBar.scrollEdgeAppearance = appearance
     }
@@ -51,10 +49,11 @@ class ChatViewController: UIViewController {
             if let e = error {
                 print("Error while retreiving data from Firestore, \(e)")
             }else{
-                for message in query!.documents {
-                    self.messages.append(MessageViewModel(sender: message[Key.FStore.senderField] as! String, body: message[Key.FStore.bodyField] as! String))
+                if query!.documents.count > 0{
+                    for message in query!.documents {
+                        self.messages.append(MessageViewModel(sender: message[Key.FStore.senderField] as! String, body: message[Key.FStore.bodyField] as! String, senderName: message[Key.FStore.senderName] as! String))
+                    }
                 }
-                
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
                     if(self.messages.count > 0 ){
@@ -65,18 +64,14 @@ class ChatViewController: UIViewController {
         }
     }
     
-    func createIPImage(fullName: String) -> UIImage{
-        let ipimage = IPImage(text: fullName, radius: 30, font: UIFont(name: "Cochin-Italic", size: 30), textColor: nil, randomBackgroundColor: true).generateImage()
-        return ipimage!
-    }
-    
     @IBAction func sendPressed(_ sender: UIButton) {
         if let messageText = messageTextfield.text {
             if !messageText.isEmpty {
-                let message = Message(sender: authManager.currentUser(), body: messageText)
+                let message = Message(sender: authManager.currentUser(), body: messageText, senderName: (self.database.currentUser?.fullName)!)
                 database.db.collection(Key.FStore.messagesCollectionName).addDocument(data: [
                     Key.FStore.senderField: message.sender,
                     Key.FStore.bodyField: message.body,
+                    Key.FStore.senderName: message.senderName,
                     Key.FStore.dateField: Date().timeIntervalSince1970
                 ]) { (error) in
                     if let e = error {
@@ -93,12 +88,13 @@ class ChatViewController: UIViewController {
     @IBAction func signOutPressed(_ sender: UIBarButtonItem) {
         authManager.signOut()
     }
-
+    
 }
 
 extension ChatViewController: AuthManagerDelegate {
     
     func whenDidSuccess() {
+        setAppeareance(color: UIColor(named:Key.BrandColors.blue)!)
         self.navigationController?.popToRootViewController(animated: true)
     }
     
@@ -118,11 +114,10 @@ extension ChatViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let message = self.messages[indexPath.row]
-
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: Key.cellIdentifier, for: indexPath) as! MessageTableViewCell
         cell.messageBody.text = message.body
-        
-        if message.sender == authManager.currentUser() {
+        if message.sender == self.authManager.currentUser() {
             cell.leftImageView.isHidden = true
             cell.rightImageView.isHidden = false
             cell.messageBubble.backgroundColor = UIColor(named: Key.BrandColors.lightPurple)
@@ -130,13 +125,15 @@ extension ChatViewController: UITableViewDataSource {
         }else {
             cell.leftImageView.isHidden = false
             cell.rightImageView.isHidden = true
-            //cell.leftImageView.image = self.createIPImage(fullName: self.database.getFullNameByEmail(email: message.sender))
-            print(self.database.findUserByEmail(email: message.sender).age)
+            cell.leftImageView.image = LetterAvatarMaker()
+                .setCircle(true)
+                .setUsername(message.senderName)
+                .setBorderWidth(1.0)
+                .setBackgroundColors([ .red ])
+                .build()
             cell.messageBubble.backgroundColor = UIColor(named: Key.BrandColors.purple)
             cell.messageBody.textColor = UIColor(named: Key.BrandColors.lightPurple)
         }
-        
         return cell
     }
-    
 }

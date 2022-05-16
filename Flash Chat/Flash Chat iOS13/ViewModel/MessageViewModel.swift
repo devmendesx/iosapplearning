@@ -11,4 +11,5 @@ import Foundation
 struct MessageViewModel {
     let sender: String
     let body: String
+    let senderName: String
 }

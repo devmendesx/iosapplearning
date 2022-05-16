@@ -28,6 +28,7 @@ struct Key {
         static let senderField = "sender"
         static let bodyField = "body"
         static let dateField = "date"
+        static let senderName = "fullName"
         
         static let userName: String = "name"
         static let userAge: String = "age"

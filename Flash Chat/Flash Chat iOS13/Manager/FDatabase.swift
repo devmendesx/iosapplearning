@@ -11,7 +11,7 @@ import FirebaseFirestore
 class FDatabase {
     
     let db = Firestore.firestore()
-    var userViewModels: [UserViewModel] = []
+    var currentUser: UserViewModel? = nil
     
     func insertNewUser(user: User) {
         self.db.collection(Key.FStore.userCollectionName).addDocument(data: [
@@ -25,22 +25,17 @@ class FDatabase {
         }
     }
     
-    func findUserByEmail(email: String) -> UserViewModel {
-        DispatchQueue.global().async {
+    func findUserByEmail(email: String){
+        DispatchQueue.global().sync {
             self.db.collection(Key.FStore.userCollectionName).whereField("email", isEqualTo: email).getDocuments { query, error in
-                self.userViewModels.removeAll()
                 if let err = error {
                     print(err)
                 }else{
                     for user in query!.documents {
-                        self.userViewModels.append(UserViewModel(fullName: user[Key.FStore.userName] as! String, age: user[Key.FStore.userAge] as! String, email: user[Key.FStore.userEmail] as! String))
+                        self.currentUser = UserViewModel(fullName: user[Key.FStore.userName] as! String, age: user[Key.FStore.userAge] as! String, email: user[Key.FStore.userEmail] as! String)
                     }
                 }
             }
         }
-        return self.userViewModels[0]
     }
-    
-    
-    
 }
